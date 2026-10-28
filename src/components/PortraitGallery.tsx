@@ -262,6 +262,52 @@ export function PortraitFrame({ portrait, index }: PortraitFrameProps) {
 
               ctx.restore();
             });
+
+            // L'abbé Malachie: pocket watch ticks when illuminated and gleams under candle flame
+            if (portrait.id === 'malachie') {
+              const wx = 0.33 * dispW;
+              const wy = 0.81 * dispH;
+              const distWatch = Math.hypot(candleCoords.x - (rect.left + wx), candleCoords.y - (rect.top + wy));
+              if (candleCoords.hasMoved && distWatch < 70) {
+                manorAudio.playPocketWatch();
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const glint = ctx.createRadialGradient(wx, wy, 1, wx, wy, 15);
+                glint.addColorStop(0, 'rgba(255, 235, 175, 0.42)');
+                glint.addColorStop(1, 'rgba(220, 150, 60, 0)');
+                ctx.fillStyle = glint;
+                ctx.beginPath();
+                ctx.arc(wx, wy, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+              }
+            }
+
+            // Ferrotype: the missing child deep in the hallway shadows behind the twins
+            if (portrait.id === 'jumeaux' && !isAltered) {
+              const hx = 0.51 * dispW;
+              const hy = 0.38 * dispH;
+              const distHall = Math.hypot(candleCoords.x - (rect.left + hx), candleCoords.y - (rect.top + hy));
+              if (candleCoords.hasMoved && distHall < 120) {
+                const prox = 1 - distHall / 120;
+                ctx.save();
+                const hallShadow = ctx.createRadialGradient(hx, hy, 2, hx, hy, 16);
+                hallShadow.addColorStop(0, `rgba(10, 8, 7, ${(prox * 0.42).toFixed(3)})`);
+                hallShadow.addColorStop(1, 'rgba(10, 8, 7, 0)');
+                ctx.fillStyle = hallShadow;
+                ctx.beginPath();
+                ctx.arc(hx, hy, 16, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Faint pinprick gaze deep in the corridor
+                ctx.fillStyle = `rgba(215, 205, 190, ${(prox * 0.55).toFixed(3)})`;
+                ctx.beginPath();
+                ctx.arc(hx - 2.5, hy - 1, 0.8, 0, Math.PI * 2);
+                ctx.arc(hx + 2.5, hy - 1, 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+              }
+            }
           }
         }
       }

@@ -18,6 +18,16 @@ interface DustMote {
   phase: number;
 }
 
+interface CandleEmber {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  maxLife: number;
+  size: number;
+}
+
 // Blackout timeline (seconds): flame snuffs out, pitch black holds, face flashes close, dark holds, flame returns.
 const BLACKOUT_DIE = 0.28;
 const BLACKOUT_EYES_IN = 0.86;
@@ -92,6 +102,7 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
 
     let rafId = 0;
     let frameCount = 0;
+    const embers: CandleEmber[] = [];
     let gleamNodes: HTMLElement[] = [];
     let candleSeconds = 0;
     let nextBlackoutAt = FIRST_BLACKOUT_AFTER;
@@ -362,9 +373,28 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
       if (radius > 2) {
         drawWallMarks(window.scrollY, lx, ly, radius);
 
+        const tiltX = prefersReduced ? 0 : Math.max(-22, Math.min(22, -candleCoords.vx * 1.4));
+        const tiltY = prefersReduced ? 0 : Math.max(-22, Math.min(22, -candleCoords.vy * 1.4));
+        const coreX = lx + tiltX;
+        const coreY = ly + tiltY;
+
+        if (speed > 16 && !prefersReduced && embers.length < 12 && Math.random() < 0.4) {
+          embers.push({
+            x: coreX + (Math.random() - 0.5) * 6,
+            y: coreY + (Math.random() - 0.5) * 6,
+            vx: -candleCoords.vx * 0.18 + (Math.random() - 0.5) * 1.2,
+            vy: -0.6 - Math.random() * 0.9,
+            life: 0,
+            maxLife: 0.28 + Math.random() * 0.2,
+            size: 0.9 + Math.random() * 0.8,
+          });
+        }
+
         ctx.save();
         ctx.globalCompositeOperation = 'screen';
-        const aura = ctx.createRadialGradient(lx, ly, 1, lx, ly, radius * 0.75);
+
+        // Organic candle halo: reaches out from cursor with subtle tilt toward motion direction
+        const aura = ctx.createRadialGradient(coreX, coreY, 1, lx, ly, radius * 0.75);
         const a = (isDeepCandle ? 0.17 : 0.09) * lightLevel;
         aura.addColorStop(0, `rgba(240, 190, 108, ${a.toFixed(3)})`);
         aura.addColorStop(0.3, `rgba(206, 132, 56, ${(a * 0.5).toFixed(3)})`);
@@ -373,6 +403,35 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
         ctx.beginPath();
         ctx.arc(lx, ly, radius * 0.75, 0, Math.PI * 2);
         ctx.fill();
+
+        // Warm tallow inner glow at the flame source
+        const core = ctx.createRadialGradient(coreX, coreY, 0.5, coreX, coreY, 22);
+        const ca = (isDeepCandle ? 0.24 : 0.14) * lightLevel;
+        core.addColorStop(0, `rgba(255, 230, 175, ${ca.toFixed(3)})`);
+        core.addColorStop(0.5, `rgba(225, 140, 50, ${(ca * 0.4).toFixed(3)})`);
+        core.addColorStop(1, 'rgba(120, 45, 15, 0)');
+        ctx.fillStyle = core;
+        ctx.beginPath();
+        ctx.arc(coreX, coreY, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Fleeting tallow sparks on rapid hand movements
+        for (let i = embers.length - 1; i >= 0; i--) {
+          const em = embers[i];
+          em.life += dt;
+          if (em.life >= em.maxLife) {
+            embers.splice(i, 1);
+            continue;
+          }
+          em.x += em.vx;
+          em.y += em.vy;
+          const progress = em.life / em.maxLife;
+          const emberAlpha = (1 - progress) * (1 - progress) * 0.65 * lightLevel;
+          ctx.fillStyle = `rgba(248, 176, 68, ${emberAlpha.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(em.x, em.y, em.size * (1 - progress * 0.4), 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         for (const m of motes) {
           if (!prefersReduced) {

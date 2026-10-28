@@ -242,6 +242,29 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     rightCaption: 'Séverin, Héloïse, Malachie, Céleste, Cyprien.',
     rightText: 'Cinq noms.',
   },
+  {
+    folioNumber: 'Feuillet IV',
+    latinRubric: 'Codicillus novissimus',
+    leftTitle: 'Le codicille',
+    leftParagraphs: [
+      '3 novembre 1889. Écrit sous l’escalier nord.',
+      'Je n’ai pas pu franchir la grille. La clef tourne dans le vide et l’allée ne redescend plus vers le village.',
+      'La table est toujours mise dans le grand salon. [[Une sixième chaise a été avancée]].',
+    ],
+    corruptedParagraphs: [
+      '3 novembre 1889. Écrit sous l’escalier nord.',
+      'Je n’ai pas pu franchir la grille. Quelqu’un a fermé les verrous depuis l’extérieur.',
+      'La table est toujours mise. [[La sixième assiette est encore chaude]].',
+    ],
+    leftMarginalia: 'Ne cherchez pas la sortie.',
+    rightType: 'engraving',
+    engravingSrc: '/assets/manoir-gravure.webp',
+    engravingAlt: 'Gravure de la grille fermée du manoir sous la lune',
+    engravingWidth: 1025,
+    engravingHeight: 735,
+    rightCaption: 'Planche IV : la grille close.',
+    rightText: 'Les gendarmes n’ont jamais retrouvé Anselme Vasseur. [[Son encrier était plein]].',
+  },
 ];
 
 export const INITIAL_WITNESSES: WitnessEntry[] = [

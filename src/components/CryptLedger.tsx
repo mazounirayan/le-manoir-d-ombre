@@ -25,6 +25,7 @@ export function CryptLedger() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [arrival] = useState(() => new Date());
   const [minutesInside, setMinutesInside] = useState(0);
+  const [showEpitaph, setShowEpitaph] = useState(false);
 
   useEffect(() => {
     try {
@@ -133,7 +134,10 @@ export function CryptLedger() {
                     type="text"
                     maxLength={60}
                     value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
+                    onChange={(e) => {
+                      setAuthorName(e.target.value);
+                      manorAudio.playPenScratch();
+                    }}
                     placeholder="Camille Rochefort"
                     className="mt-2 w-full rounded-xs border border-line-strong bg-paper px-3 py-2 text-sm text-ink placeholder:text-faint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle"
                   />
@@ -152,7 +156,10 @@ export function CryptLedger() {
                     rows={4}
                     maxLength={240}
                     value={verseText}
-                    onChange={(e) => setVerseText(e.target.value)}
+                    onChange={(e) => {
+                      setVerseText(e.target.value);
+                      manorAudio.playPenScratch();
+                    }}
                     placeholder="Dans l’escalier nord…"
                     className="mt-2 w-full rounded-xs border border-line-strong bg-paper px-3 py-2 text-sm text-ink placeholder:text-faint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle"
                   />
@@ -182,6 +189,30 @@ export function CryptLedger() {
                       <ArchiveResetIcon className="h-4 w-4" />
                       <span>Effacer vos signatures</span>
                     </button>
+                  )}
+                </div>
+
+                <div className="border-t border-line pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowEpitaph((prev) => {
+                        const next = !prev;
+                        if (next) manorAudio.playSuddenKnock();
+                        else manorAudio.playPageTurn();
+                        return next;
+                      });
+                    }}
+                    className="inline-flex items-center gap-2 text-sm text-candle hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle"
+                  >
+                    <span>{showEpitaph ? 'Recouvrir la dalle funéraire' : 'Frotter la pierre tombale'}</span>
+                  </button>
+
+                  {showEpitaph && (
+                    <div className="mt-3 rounded-xs border border-line bg-paper-deep p-4 text-sm">
+                      <p className="font-display text-base tracking-widest text-ink">« QUOD SUMUS HOC ERITIS »</p>
+                      <p className="mt-1 italic text-muted">Ce que nous sommes, vous le serez. Gravé sur le linteau du caveau de Valmorin.</p>
+                    </div>
                   )}
                 </div>
               </div>

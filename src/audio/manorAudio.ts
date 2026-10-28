@@ -623,6 +623,59 @@ class ManorAudioEngine {
     gaspGain.connect(this.masterGain);
     gaspSrc.start(now);
   }
+
+  private lastPenScratchAt = 0;
+  public playPenScratch(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const nowMs = performance.now();
+    if (nowMs - this.lastPenScratchAt < 75) return;
+    this.lastPenScratchAt = nowMs;
+
+    const now = this.ctx.currentTime;
+    const len = Math.floor(this.ctx.sampleRate * 0.05);
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      ch[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.28));
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 3200 + (Math.random() * 800 - 400);
+    filter.Q.value = 4.0;
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0.07;
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+    src.start(now);
+  }
+
+  private lastWatchTickAt = 0;
+  public playPocketWatch(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const nowMs = performance.now();
+    if (nowMs - this.lastWatchTickAt < 220) return;
+    this.lastWatchTickAt = nowMs;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const env = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(2600, now);
+    osc.frequency.exponentialRampToValueAtTime(750, now + 0.018);
+
+    env.gain.setValueAtTime(0.0001, now);
+    env.gain.linearRampToValueAtTime(0.045, now + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.0001, now + 0.024);
+
+    osc.connect(env);
+    env.connect(this.masterGain);
+    osc.start(now);
+    osc.stop(now + 0.03);
+  }
 }
 
 export const manorAudio = new ManorAudioEngine();
