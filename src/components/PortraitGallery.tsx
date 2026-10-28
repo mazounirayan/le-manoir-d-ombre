@@ -183,94 +183,12 @@ export function PortraitFrame({ portrait, index }: PortraitFrameProps) {
             }
 
             const dilation = Math.max(0, (heatRef.current - 0.3) / 0.7) * portrait.dilation;
-            const uncannyWarp = !prefersReduced ? Math.max(0, (heatRef.current - 0.5) / 0.5) : 0;
 
             const natW = img.naturalWidth;
             const natH = img.naturalHeight;
             const strips = 14;
             const k = Math.max(-0.42, Math.min(0.42, curKx));
             const invU = (u: number) => (u < k ? -1 + (u + 1) / (1 + k) : (u - k) / (1 - k));
-
-            // Orbital hollowing around the eye sockets when the oil varnish overheats.
-            if (uncannyWarp > 0.02) {
-              ctx.save();
-              for (const eye of portrait.eyes) {
-                const dcx = (eye.xPct / 100) * dispW;
-                const dcy = (eye.yPct / 100) * dispH;
-                const orx = (eye.rxPct / 100) * dispW * 2.15;
-                const ory = (eye.ryPct / 100) * dispH * 3.1;
-                const socket = ctx.createRadialGradient(dcx, dcy + ory * 0.12, orx * 0.25, dcx, dcy + ory * 0.12, orx);
-                socket.addColorStop(0, `rgba(6, 4, 4, ${(uncannyWarp * 0.34).toFixed(3)})`);
-                socket.addColorStop(0.65, `rgba(9, 6, 5, ${(uncannyWarp * 0.18).toFixed(3)})`);
-                socket.addColorStop(1, 'rgba(9, 6, 5, 0)');
-                ctx.fillStyle = socket;
-                ctx.beginPath();
-                ctx.ellipse(dcx, dcy + ory * 0.12, orx, ory, 0, 0, Math.PI * 2);
-                ctx.fill();
-              }
-              ctx.restore();
-            }
-
-            // Uncanny slackening of the painted mouth and lower face under prolonged candle heat.
-            if (uncannyWarp > 0.03 && portrait.eyes.length === 2) {
-              const e0 = portrait.eyes[0];
-              const e1 = portrait.eyes[1];
-              const faceCxPct = (e0.xPct + e1.xPct) * 0.5;
-              const eyeCyPct = (e0.yPct + e1.yPct) * 0.5;
-              const spanPct = Math.abs(e1.xPct - e0.xPct);
-              const mouthCyPct = eyeCyPct + spanPct * 1.05;
-              const mouthRxPct = spanPct * 0.56;
-              const mouthRyPct = spanPct * 0.36;
-
-              const mcx = (faceCxPct / 100) * dispW;
-              const mcy = (mouthCyPct / 100) * dispH;
-              const mrx = (mouthRxPct / 100) * dispW;
-              const mry = (mouthRyPct / 100) * dispH;
-
-              const smcx = (faceCxPct / 100) * natW;
-              const smcy = (mouthCyPct / 100) * natH;
-              const smrx = (mouthRxPct / 100) * natW;
-              const smry = (mouthRyPct / 100) * natH;
-
-              ctx.save();
-              ctx.globalAlpha = Math.min(0.92, uncannyWarp * 0.95);
-              ctx.beginPath();
-              ctx.ellipse(mcx, mcy, mrx, mry, 0, 0, Math.PI * 2);
-              ctx.clip();
-
-              const jawStrips = 12;
-              for (let i = 0; i < jawStrips; i++) {
-                const u0 = -1 + (2 * i) / jawStrips;
-                const u1 = -1 + (2 * (i + 1)) / jawStrips;
-                const um = 0.5 * (u0 + u1);
-                const weight = Math.cos(um * Math.PI * 0.5);
-                const sag = uncannyWarp * smry * 0.22 * weight * weight;
-                const dx0 = mcx + u0 * mrx;
-                const dw = (u1 - u0) * mrx + 0.45;
-                const sx0 = smcx + u0 * smrx;
-                const sw = (u1 - u0) * smrx;
-
-                ctx.drawImage(
-                  img,
-                  sx0,
-                  smcy - smry - sag,
-                  sw,
-                  smry * 2,
-                  dx0,
-                  mcy - mry,
-                  dw,
-                  mry * 2
-                );
-              }
-
-              // Subtle parted-lip shadow crease in the center of the slackened mouth.
-              const rictus = ctx.createRadialGradient(mcx, mcy + mry * 0.05, 1, mcx, mcy + mry * 0.05, mrx * 0.65);
-              rictus.addColorStop(0, `rgba(6, 4, 4, ${(uncannyWarp * 0.36).toFixed(3)})`);
-              rictus.addColorStop(1, 'rgba(6, 4, 4, 0)');
-              ctx.fillStyle = rictus;
-              ctx.fillRect(mcx - mrx, mcy - mry * 0.3, mrx * 2, mry * 0.7);
-              ctx.restore();
-            }
 
             portrait.eyes.forEach((eye) => {
               const dcx = (eye.xPct / 100) * dispW;

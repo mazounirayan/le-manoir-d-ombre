@@ -257,7 +257,7 @@ export const INITIAL_WITNESSES: WitnessEntry[] = [
     name: 'Garance de Saint-Clair',
     dateLabel: '31 octobre 1896',
     isoDate: '1896-10-31',
-    verse: 'Les yeux d’Héloïse ont suivi ma bougie. Sa bouche n’était pas fermée sur l’esquisse.',
+    verse: 'Les yeux d’Héloïse ont suivi ma bougie. Son regard s’est tourné vers moi.',
   },
   {
     id: 'moreau-1903',
