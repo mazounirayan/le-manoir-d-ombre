@@ -34,8 +34,8 @@ const BLACKOUT_EYES_IN = 0.86;
 const BLACKOUT_EYES_OUT = 1.22;
 const BLACKOUT_RELIGHT = 1.88;
 const BLACKOUT_END = 2.48;
-const FIRST_BLACKOUT_AFTER = 24;
-const NEXT_BLACKOUT_AFTER = 150;
+const FIRST_BLACKOUT_AFTER = 16;
+const NEXT_BLACKOUT_AFTER = 110;
 
 export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -88,7 +88,7 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
       candleCoords.hasMoved = true;
     };
 
-    const onTouchMove = (e: TouchEvent) => {
+    const onTouch = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         candleCoords.targetX = e.touches[0].clientX;
         candleCoords.targetY = e.touches[0].clientY;
@@ -98,7 +98,8 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
 
     window.addEventListener('resize', resize);
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchstart', onTouch, { passive: true });
+    window.addEventListener('touchmove', onTouch, { passive: true });
 
     let rafId = 0;
     let frameCount = 0;
@@ -464,7 +465,8 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
       window.cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchstart', onTouch);
+      window.removeEventListener('touchmove', onTouch);
     };
   }, []);
 

@@ -54,6 +54,7 @@ export function ManorHeader({
             type="button"
             onClick={onToggleLighting}
             aria-pressed={lightingMode === 'candle'}
+            title="Basculer la lumière (Touche L)"
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-xs border border-line-strong bg-surface px-3 py-1.5 text-xs text-ink transition-colors duration-150 hover:border-candle hover:bg-surface-raised active:bg-paper-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle disabled:opacity-40"
           >
             {lightingMode === 'candle' ? (
@@ -67,12 +68,14 @@ export function ManorHeader({
                 <span>Veilleuse</span>
               </>
             )}
+            <kbd className="hidden font-mono text-[10px] text-faint sm:inline">[L]</kbd>
           </button>
 
           <button
             type="button"
             onClick={onToggleSound}
             aria-pressed={soundOn}
+            title="Activer ou couper le son (Touche S)"
             className={`inline-flex items-center gap-2 whitespace-nowrap rounded-xs border px-3 py-1.5 text-xs transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle disabled:opacity-40 ${
               soundOn
                 ? 'border-candle bg-surface-raised text-ink'
@@ -90,6 +93,7 @@ export function ManorHeader({
                 <span>Silence</span>
               </>
             )}
+            <kbd className="hidden font-mono text-[10px] text-faint sm:inline">[S]</kbd>
           </button>
         </div>
       </div>

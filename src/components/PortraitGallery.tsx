@@ -342,7 +342,7 @@ export function PortraitFrame({ portrait, index }: PortraitFrameProps) {
                 width={portrait.width}
                 height={portrait.height}
                 loading={index === 0 ? undefined : 'lazy'}
-                className={`h-full w-full object-cover ${isWarmed ? 'contrast-125 sepia-[.16]' : ''}`}
+                className={`h-full w-full object-cover ${isWarmed ? 'portrait-warmed' : ''}`}
               />
               <canvas
                 ref={canvasRef}
@@ -363,7 +363,7 @@ export function PortraitFrame({ portrait, index }: PortraitFrameProps) {
             <div>
               <h4 className="type-title text-ink">Revers</h4>
               <p className="mt-2 text-sm text-muted">
-                <code className="text-candle">{portrait.cote}</code> · {portrait.medium}
+                <code className="text-candle">{portrait.cote}</code> ({portrait.medium})
               </p>
               <p className="mt-6 max-w-[48ch] text-base italic text-ink">{portrait.versoConfession}</p>
             </div>

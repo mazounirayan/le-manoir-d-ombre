@@ -7,10 +7,16 @@ import { assetUrl } from '../data/valmorinData';
 interface VestibuleHeroProps {
   soundOn: boolean;
   onEnterWithSound: () => void;
+  onEnterSilent: () => void;
   returnedFromCrypt: boolean;
 }
 
-export function VestibuleHero({ soundOn, onEnterWithSound, returnedFromCrypt }: VestibuleHeroProps) {
+export function VestibuleHero({
+  soundOn,
+  onEnterWithSound,
+  onEnterSilent,
+  returnedFromCrypt,
+}: VestibuleHeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const plateImgRef = useRef<HTMLImageElement | null>(null);
   const plateCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -167,6 +173,7 @@ export function VestibuleHero({ soundOn, onEnterWithSound, returnedFromCrypt }: 
 
             <a
               href="#galerie"
+              onClick={onEnterSilent}
               className="inline-flex items-center gap-2 rounded-xs border border-line-strong bg-surface px-5 py-3 text-sm text-ink transition-colors duration-150 hover:border-candle hover:bg-surface-raised active:bg-paper-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle"
             >
               <CompassRoseIcon className="h-4 w-4 text-candle" />

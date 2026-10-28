@@ -77,6 +77,7 @@ export function CryptLedger() {
     setAuthorName('');
     setVerseText('');
     manorAudio.playWaxSealBreak();
+    manorAudio.playFuneralBell();
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     } catch {

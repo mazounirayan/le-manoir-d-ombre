@@ -34,6 +34,18 @@ class ManorAudioEngine {
     return this.enabled;
   }
 
+  public pauseIfActive(): void {
+    if (this.enabled && this.ctx && this.ctx.state === 'running') {
+      void this.ctx.suspend();
+    }
+  }
+
+  public resumeIfActive(): void {
+    if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+      void this.ctx.resume();
+    }
+  }
+
   public toggle(): boolean {
     if (this.enabled) {
       this.stop();
@@ -675,6 +687,33 @@ class ManorAudioEngine {
     env.connect(this.masterGain);
     osc.start(now);
     osc.stop(now + 0.03);
+  }
+
+  public playFuneralBell(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+    const fundamental = 73.42; // D2 (Glas funèbre en ré mineur)
+    const partials = [
+      { ratio: 1.0, gain: 0.26, decay: 4.6 },
+      { ratio: 2.0, gain: 0.16, decay: 3.4 },
+      { ratio: 2.76, gain: 0.11, decay: 2.4 },
+      { ratio: 3.4, gain: 0.07, decay: 1.8 },
+      { ratio: 4.16, gain: 0.04, decay: 1.1 },
+    ];
+
+    for (const p of partials) {
+      const osc = this.ctx.createOscillator();
+      const env = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(fundamental * p.ratio, now);
+      env.gain.setValueAtTime(0.0001, now);
+      env.gain.linearRampToValueAtTime(p.gain, now + 0.008);
+      env.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
+      osc.connect(env);
+      env.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + p.decay + 0.05);
+    }
   }
 }
 

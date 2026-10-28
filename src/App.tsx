@@ -47,8 +47,10 @@ export function App() {
       window.clearTimeout(restoreTimer);
       if (document.hidden) {
         document.title = 'Reviens.';
+        manorAudio.pauseIfActive();
       } else {
         document.title = 'Merci.';
+        manorAudio.resumeIfActive();
         restoreTimer = window.setTimeout(() => {
           document.title = originalTitle;
         }, 2200);
@@ -66,6 +68,10 @@ export function App() {
     setSoundOn(manorAudio.toggle());
   };
 
+  const handleToggleLighting = () => {
+    setLightingMode((prev) => (prev === 'candle' ? 'lantern' : 'candle'));
+  };
+
   const handleEnterWithSound = () => {
     if (!soundOn) {
       manorAudio.start();
@@ -75,9 +81,29 @@ export function App() {
     document.getElementById('galerie')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleToggleLighting = () => {
-    setLightingMode((prev) => (prev === 'candle' ? 'lantern' : 'candle'));
+  const handleEnterSilent = () => {
+    setLightingMode('candle');
+    document.getElementById('galerie')?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Quick keyboard shortcuts (S for sound, L for lighting) unless user is typing
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setSoundOn(manorAudio.toggle());
+      } else if (e.key === 'l' || e.key === 'L') {
+        e.preventDefault();
+        setLightingMode((prev) => (prev === 'candle' ? 'lantern' : 'candle'));
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   return (
     <div className="relative min-h-dvh bg-paper text-ink">
@@ -95,6 +121,7 @@ export function App() {
         <VestibuleHero
           soundOn={soundOn}
           onEnterWithSound={handleEnterWithSound}
+          onEnterSilent={handleEnterSilent}
           returnedFromCrypt={visitedCrypt && activeRoom === 'vestibule'}
         />
         <PortraitGallery />
