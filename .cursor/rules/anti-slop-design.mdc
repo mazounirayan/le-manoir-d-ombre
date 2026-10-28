@@ -1,0 +1,13 @@
+---
+description: Always-on anti-slop UI, gothic editorial typography, WCAG AA contrast, semantic HTML, and French literary copy filter. Reads DESIGN.md and .claude/skills/anti-slop-design/SKILL.md before frontend edits.
+globs: **/*
+alwaysApply: true
+---
+
+Before creating or modifying any component, stylesheet, or literary copy in this repository:
+1. Read `DESIGN.md` for the authoritative OKLCH color palette, approved fonts (`Cormorant Garamond`, `Spectral`, `IBM Plex Mono`), `4px` spatial grid, and component rules.
+2. Enforce `.claude/skills/anti-slop-design/SKILL.md`:
+   - Zero raw Tailwind palette utilities, zero `#000`/`#fff`, zero `backdrop-blur`, zero `rounded-2xl`, zero `transition-all`, zero `duration-300`.
+   - Zero eyebrows/kickers above headings, zero italics or `<span>` accents inside headings, Sentence case headings only.
+   - Zero emojis and zero em-dashes or en-dashes in copy.
+   - Every `<button>` carries explicit `type`, `:focus-visible`, `:active`, and `:disabled` states; every `<img>` carries explicit `width`, `height`, and descriptive `alt` in `.webp` format.
