@@ -1,6 +1,9 @@
-export interface EyeCoordinate {
+export interface EyeSocket {
   xPct: number;
   yPct: number;
+  rxPct: number;
+  ryPct: number;
+  lidRgb: [number, number, number];
 }
 
 export interface AncestorPortrait {
@@ -19,7 +22,8 @@ export interface AncestorPortrait {
   epitaph: string;
   versoConfession: string;
   notaryNote: string;
-  eyes: EyeCoordinate[];
+  horrorPhenomenon: string;
+  eyes: EyeSocket[];
 }
 
 export interface GrimoireFolio {
@@ -45,12 +49,100 @@ export interface WitnessEntry {
   verse: string;
 }
 
+export interface WallPhantomMark {
+  id: string;
+  xRatio: number;
+  docY: number;
+  kind: 'tally' | 'whisper' | 'footprints';
+  text?: string;
+  count?: number;
+  angleDeg?: number;
+}
+
 export const MANOR_ROOMS = [
   { id: 'vestibule', numeral: 'I', label: 'Le vestibule' },
   { id: 'galerie', numeral: 'II', label: 'La galerie' },
   { id: 'bibliotheque', numeral: 'III', label: 'Le grimoire' },
   { id: 'crypte', numeral: 'IV', label: 'La crypte' },
 ] as const;
+
+export const WALL_PHANTOM_MARKS: WallPhantomMark[] = [
+  {
+    id: 'vestibule-tally',
+    xRatio: 0.05,
+    docY: 250,
+    kind: 'tally',
+    count: 13,
+    text: 'XIII nuits sans aube',
+    angleDeg: -3,
+  },
+  {
+    id: 'vestibule-center-whisper',
+    xRatio: 0.48,
+    docY: 560,
+    kind: 'whisper',
+    text: 'Quelqu’un vous observe depuis la lucarne haute',
+    angleDeg: -2,
+  },
+  {
+    id: 'vestibule-whisper',
+    xRatio: 0.82,
+    docY: 690,
+    kind: 'footprints',
+    text: 'Traces humides devant la grille',
+    angleDeg: 8,
+  },
+  {
+    id: 'galerie-steps',
+    xRatio: 0.54,
+    docY: 1180,
+    kind: 'footprints',
+    text: 'Pas montés de la cave à 03:17',
+    angleDeg: -14,
+  },
+  {
+    id: 'galerie-whisper-left',
+    xRatio: 0.05,
+    docY: 1560,
+    kind: 'whisper',
+    text: 'Leurs pupilles bougent sous l’huile sèche',
+    angleDeg: -2,
+  },
+  {
+    id: 'galerie-tally-mid',
+    xRatio: 0.48,
+    docY: 1960,
+    kind: 'tally',
+    count: 13,
+    text: '03:17 : ne te retourne pas',
+    angleDeg: 3,
+  },
+  {
+    id: 'grimoire-whisper',
+    xRatio: 0.06,
+    docY: 2660,
+    kind: 'whisper',
+    text: 'Un sixième souffle lit par-dessus votre épaule',
+    angleDeg: -3,
+  },
+  {
+    id: 'crypte-footprints',
+    xRatio: 0.46,
+    docY: 3360,
+    kind: 'footprints',
+    text: 'Aucun pas ne redescend',
+    angleDeg: -8,
+  },
+  {
+    id: 'crypte-tally',
+    xRatio: 0.07,
+    docY: 3740,
+    kind: 'tally',
+    count: 17,
+    text: 'Ils grattent sous la craie',
+    angleDeg: 2,
+  },
+];
 
 export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
   {
@@ -69,12 +161,14 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     epitaph:
       '« Il fit murer les horloges de l’aile ouest afin que nul ne sût à quelle heure la mer montait sous les caves. »',
     versoConfession:
-      'Inscription tracée à la mine de plomb au dos du châssis : « J’ai vendu le sommeil des miens contre sept hivers de silence ; voici venir le huitième. »',
+      'Inscription tracée à la mine de plomb au dos du châssis : « J’ai vendu le sommeil des miens contre sept hivers de silence ; voici venir le huitième, et quelqu’un frappe déjà derrière la brique fraîche. »',
     notaryNote:
-      'Toile retrouvée tiède au toucher lors de l’ouverture des portes à l’aube du premier novembre.',
+      'Toile retrouvée tiède au toucher lors de l’ouverture des portes à l’aube du premier novembre ; des traces d’ongles marquaient l’intérieur du châssis.',
+    horrorPhenomenon:
+      'Le bitume suinte sous vos doigts : une larme sombre perle sous sa paupière et une écriture traverse la toile.',
     eyes: [
-      { xPct: 43.0, yPct: 30.8 },
-      { xPct: 54.4, yPct: 30.3 },
+      { xPct: 42.90, yPct: 31.05, rxPct: 1.75, ryPct: 0.56, lidRgb: [86, 61, 43] },
+      { xPct: 54.45, yPct: 30.55, rxPct: 1.75, ryPct: 0.54, lidRgb: [76, 54, 38] },
     ],
   },
   {
@@ -93,12 +187,14 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     epitaph:
       '« Ses gants de deuil furent découverts sur la balustrade de la falaise ; jamais la marée ne rendit son anneau. »',
     versoConfession:
-      'Billet cousu dans la doublure de toile : « Ne plaignez point mes larmes ; elles ne coulent que lorsque les vivants s’approchent du feu. »',
+      'Billet cousu avec un cheveu noir dans la doublure de toile : « Ne plaignez point mes larmes ; elles ne coulent que lorsque les vivants s’approchent du feu. »',
     notaryNote:
-      'Les pétales peints au centre du corsage dégagent encore une odeur de cendre humide et de belladone.',
+      'Les pétales peints au centre du corsage dégagent encore une odeur de cendre humide, de sel marin et de belladone.',
+    horrorPhenomenon:
+      'À la chaleur de votre mèche, deux filets de laque carmin s’écoulent lentement de ses cils inférieurs.',
     eyes: [
-      { xPct: 44.3, yPct: 28.1 },
-      { xPct: 56.1, yPct: 27.6 },
+      { xPct: 44.15, yPct: 28.25, rxPct: 2.05, ryPct: 0.66, lidRgb: [94, 64, 55] },
+      { xPct: 56.10, yPct: 27.75, rxPct: 2.00, ryPct: 0.62, lidRgb: [82, 55, 47] },
     ],
   },
   {
@@ -117,12 +213,14 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     epitaph:
       '« Quarante ans il écouta derrière la grille de chêne sans prononcer une seule absolution. »',
     versoConfession:
-      'Gravé au canif dans le bois du cadre : « L’aiguille s’est figée à trois heures dix-sept ; depuis lors, c’est la maison qui nous confesse. »',
+      'Gravé au canif dans le bois du cadre : « L’aiguille s’est figée à trois heures dix-sept ; depuis lors, c’est la maison qui nous confesse, et sa voix monte du puits. »',
     notaryNote:
-      'La montre représentée sur la toile correspond pièce pour pièce à celle trouvée arrêtée sur l’autel de la crypte.',
+      'La montre représentée sur la toile correspond pièce pour pièce à celle trouvée arrêtée sur l’autel de la crypte, le verre fendu de l’intérieur.',
+    horrorPhenomenon:
+      'Le vernis craquelle autour du gousset peint : son regard refuse désormais de quitter votre flamme.',
     eyes: [
-      { xPct: 49.0, yPct: 26.6 },
-      { xPct: 60.1, yPct: 27.0 },
+      { xPct: 48.75, yPct: 26.55, rxPct: 1.85, ryPct: 0.58, lidRgb: [82, 59, 41] },
+      { xPct: 60.15, yPct: 27.00, rxPct: 1.60, ryPct: 0.50, lidRgb: [44, 31, 21] },
     ],
   },
   {
@@ -143,12 +241,14 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     versoConfession:
       'Trace crayeuse au revers de la plaque métallique : « Nous comptons les pas dans l’escalier ; il manque toujours celui qui redescend. »',
     notaryNote:
-      'C’est à leur fenêtre mansardée que les pêcheurs affirment apercevoir, chaque trente et un octobre, une veilleuse allumée.',
+      'C’est à leur fenêtre mansardée que les pêcheurs affirment apercevoir, chaque trente et un octobre, une silhouette debout près d’une veilleuse.',
+    horrorPhenomenon:
+      'Les sels d’argent frémissent à la lueur du suif : la silhouette de Cyprien vacille sur la plaque comme un reflet sans corps.',
     eyes: [
-      { xPct: 39.7, yPct: 33.4 },
-      { xPct: 42.8, yPct: 33.4 },
-      { xPct: 59.4, yPct: 34.4 },
-      { xPct: 62.5, yPct: 34.3 },
+      { xPct: 39.65, yPct: 33.55, rxPct: 0.85, ryPct: 0.44, lidRgb: [104, 94, 79] },
+      { xPct: 42.75, yPct: 33.55, rxPct: 0.85, ryPct: 0.44, lidRgb: [98, 88, 74] },
+      { xPct: 59.35, yPct: 34.95, rxPct: 0.85, ryPct: 0.42, lidRgb: [94, 84, 70] },
+      { xPct: 62.60, yPct: 34.85, rxPct: 0.85, ryPct: 0.42, lidRgb: [92, 82, 68] },
     ],
   },
 ];
@@ -160,10 +260,10 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     leftTitle: 'Procès-verbal de la chambre close',
     leftParagraphs: [
       'L’an mil huit cent quatre-vingt-neuf, la veille de la Toussaint, nous, maître Anselme Vasseur, avons pénétré dans la bibliothèque haute du manoir de Valmorin après rupture des chaînes du portail.',
-      'Sur le pupitre de chêne noir reposait le présent registre relié en peau de veau calcinée. Cinq chandelles de suif brûlaient encore autour de l’ouvrage, bien que le domaine fût déserté depuis trois marées.',
+      'Sur le pupitre de chêne noir reposait le présent registre relié en peau de veau calcinée. Cinq chandelles de suif brûlaient encore autour de l’ouvrage, bien que le domaine fût déserté depuis trois marées et que les miroirs eussent été retournés face contre pierre.',
     ],
     leftMarginalia:
-      'Note en marge : ne jamais souffler la cinquième mèche avant d’avoir refermé le fermoir de fer.',
+      'Note griffonnée d’une main tremblante : ne jamais souffler la cinquième mèche avant d’avoir refermé le fermoir de fer.',
     rightType: 'engraving',
     engravingSrc: '/assets/grimoire-botanique.webp',
     engravingAlt:
@@ -172,18 +272,18 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     engravingHeight: 1200,
     rightCaption: 'Planche I : Herbier funèbre d’Atropa belladonna et sphinx Acherontia.',
     rightText:
-      'Décoction employée par Héloïse de Valmorin pour dilater la pupille et percevoir, disait-elle, « les hôtes assis dans l’angle obscur des miroirs ».',
+      'Décoction employée par Héloïse de Valmorin pour dilater la pupille et percevoir, disait-elle, « les hôtes immobiles assis dans l’angle obscur des miroirs ».',
   },
   {
     folioNumber: 'Feuillet II',
     latinRubric: 'Horologium umbrarum',
     leftTitle: 'Mécanique de l’heure immobile',
     leftParagraphs: [
-      'À trois heures dix-sept du matin, toutes les pendules du domaine s’arrêtèrent sur la même seconde. Le balancier du vestibule oscille pourtant encore dans le vide, produisant un battement sec que nul ressort n’alimente.',
+      'À trois heures dix-sept du matin, toutes les pendules du domaine s’arrêtèrent sur la même seconde. Le balancier du vestibule oscille pourtant encore dans le vide, et au treizième battement suspendu répond un pouls sourd sous les lattes du plancher.',
       'L’abbé Malachie consigna dans ses cahiers que l’architecture même du manoir avait été bâtie comme une sphère armillaire destinée à retenir une seule nuit d’automne hors du calendrier des vivants.',
     ],
     leftMarginalia:
-      'Observation : quiconque prête l’oreille au treizième battement entend le silence prendre souffle.',
+      'Observation : quiconque prête l’oreille au treizième battement entend le silence prendre souffle sous ses pas.',
     rightType: 'engraving',
     engravingSrc: '/assets/grimoire-eclipse.webp',
     engravingAlt:
@@ -192,7 +292,7 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     engravingHeight: 1200,
     rightCaption: 'Planche II : Astrolabe d’éclipse et clef maîtresse du caveau familial.',
     rightText:
-      'Les phases lunaires gravées au sommet indiquent le retour septennal du brouillard salin qui engloutit les falaises de Caux.',
+      'Les phases lunaires gravées au sommet indiquent le retour septennal du brouillard salin qui engloutit les falaises de Caux et verrouille les portes de l’intérieur.',
   },
   {
     folioNumber: 'Feuillet III',
@@ -200,10 +300,10 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     leftTitle: 'Le rituel des cinq veilleuses',
     leftParagraphs: [
       'Selon le codicille secret de Séverin de Valmorin, cinq flammes doivent être éveillées sur la table de pierre pour rendre la parole aux pierres muettes de la crypte.',
-      'Allumez chacune des cinq chandelles ci-contre afin d’éprouver la devise gravée sous le blason : lorsque la dernière mèche prend feu, la clause cachée du testament se dévoile à l’encre carmin.',
+      'Allumez chacune des cinq chandelles ci-contre afin d’éprouver la devise gravée sous le blason : lorsque la dernière mèche prend feu, la clause cachée du testament suinte à l’encre carmin sur le vélin.',
     ],
     leftMarginalia:
-      'Avertissement du clerc : l’ordre importe peu, mais toute flamme éveillée appelle un témoin.',
+      'Avertissement du clerc : l’ordre importe peu, mais toute flamme éveillée appelle un témoin dans la pièce où vous lisez.',
     rightType: 'ritual',
     rightCaption: 'Épreuve notariale : allumez les cinq chandelles de veille.',
     rightText:
@@ -218,7 +318,7 @@ export const INITIAL_WITNESSES: WitnessEntry[] = [
     dateLabel: '31 octobre 1889',
     isoDate: '1889-10-31',
     verse:
-      'J’ai apposé la cire rouge sur les portes de la galerie ; pourtant, en me retournant au bas du perron, la lucarne du grenier venait de se rallumer.',
+      'J’ai apposé la cire rouge sur les portes de la galerie ; pourtant, en me retournant au bas du perron, la lucarne du grenier venait de se rallumer et quelqu’un m’observait derrière la vitre.',
   },
   {
     id: 'garance-1896',
@@ -226,7 +326,7 @@ export const INITIAL_WITNESSES: WitnessEntry[] = [
     dateLabel: '31 octobre 1896',
     isoDate: '1896-10-31',
     verse:
-      'Les portraits ne dorment point sous leur vernis noir. J’ai cru voir les lèvres d’Héloïse frémir lorsque ma bougie s’est inclinée dans le courant d’air.',
+      'Les portraits ne dorment point sous leur vernis noir. J’ai vu les pupilles d’Héloïse glisser vers ma bougie et une larme sombre rouler sur le bois du cadre.',
   },
   {
     id: 'docteur-moreau-1903',
@@ -234,6 +334,6 @@ export const INITIAL_WITNESSES: WitnessEntry[] = [
     dateLabel: '31 octobre 1903',
     isoDate: '1903-10-31',
     verse:
-      'Aucune explication physique ne rend compte du battement régulier de l’horloge dont j’ai moi-même retiré les poids de fonte.',
+      'Aucune explication physique ne rend compte du double battement cardiaque qui résonne sous le parquet chaque fois que l’horloge sans poids retient sa treizième seconde.',
   },
 ];

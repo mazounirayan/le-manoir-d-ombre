@@ -152,24 +152,6 @@ pre {
   border: 1px solid var(--color-line-strong);
 }
 
-.eye-glint {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--color-ink);
-  opacity: 0.42;
-  mix-blend-mode: screen;
-}
-
-.eye-glint-warm {
-  width: 3.5px;
-  height: 3.5px;
-  border-radius: 50%;
-  background-color: var(--color-candle);
-  opacity: 0.82;
-  mix-blend-mode: screen;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

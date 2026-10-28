@@ -6,14 +6,18 @@ class ManorAudioEngine {
   private masterGain: GainNode | null = null;
   private windNodes: AudioNode[] = [];
   private clockTimer: number | null = null;
+  private footstepsTimer: number | null = null;
   private tickCount = 0;
   private enabled = false;
   private lastCreakAt = 0;
+  private lastSputterAt = 0;
 
   private ensureContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return null;
       this.ctx = new AudioCtx();
       this.masterGain = this.ctx.createGain();
@@ -47,10 +51,11 @@ class ManorAudioEngine {
     const now = ctx.currentTime;
     this.masterGain.gain.cancelScheduledValues(now);
     this.masterGain.gain.setValueAtTime(0.0001, now);
-    this.masterGain.gain.exponentialRampToValueAtTime(0.32, now + 1.4);
+    this.masterGain.gain.exponentialRampToValueAtTime(0.34, now + 1.4);
 
     this.startAutumnWind(ctx);
     this.startComtoiseClock();
+    this.startPhantomFootsteps();
   }
 
   public stop(): void {
@@ -58,6 +63,10 @@ class ManorAudioEngine {
     if (this.clockTimer !== null) {
       window.clearInterval(this.clockTimer);
       this.clockTimer = null;
+    }
+    if (this.footstepsTimer !== null) {
+      window.clearInterval(this.footstepsTimer);
+      this.footstepsTimer = null;
     }
     if (this.ctx && this.masterGain) {
       const now = this.ctx.currentTime;
@@ -90,7 +99,6 @@ class ManorAudioEngine {
     this.teardownWind();
     if (!this.masterGain) return;
 
-    // 4-second looping brown-pink noise buffer
     const length = ctx.sampleRate * 4;
     const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -100,7 +108,6 @@ class ManorAudioEngine {
       lastOut = (lastOut + 0.025 * white) / 1.025;
       data[i] = lastOut * 2.6;
     }
-    // Smooth loop seam
     const fadeSamples = Math.floor(ctx.sampleRate * 0.1);
     for (let i = 0; i < fadeSamples; i++) {
       const t = i / fadeSamples;
@@ -111,13 +118,11 @@ class ManorAudioEngine {
     noise.buffer = buffer;
     noise.loop = true;
 
-    // Low stone draft resonance
     const lowFilter = ctx.createBiquadFilter();
     lowFilter.type = 'bandpass';
     lowFilter.frequency.value = 185;
     lowFilter.Q.value = 3.2;
 
-    // High chimney gust whistler
     const highFilter = ctx.createBiquadFilter();
     highFilter.type = 'bandpass';
     highFilter.frequency.value = 510;
@@ -127,12 +132,12 @@ class ManorAudioEngine {
     lfo.type = 'sine';
     lfo.frequency.value = 0.085;
     const lfoDepth = ctx.createGain();
-    lfoDepth.gain.value = 125;
+    lfoDepth.gain.value = 135;
 
     const windGain = ctx.createGain();
     windGain.gain.value = 0.34;
     const whistleGain = ctx.createGain();
-    whistleGain.gain.value = 0.08;
+    whistleGain.gain.value = 0.085;
 
     lfo.connect(lfoDepth);
     lfoDepth.connect(highFilter.frequency);
@@ -158,8 +163,12 @@ class ManorAudioEngine {
     this.clockTimer = window.setInterval(() => {
       if (!this.enabled || !this.ctx || !this.masterGain) return;
       this.tickCount += 1;
-      // Skip every 13th beat like an arrested escapement
-      if (this.tickCount % 13 === 0) return;
+
+      // Every 13th beat: escapement freezes and a muffled double heartbeat throbs under the floor
+      if (this.tickCount % 13 === 0) {
+        this.playSubfloorHeartbeat();
+        return;
+      }
 
       const isTic = this.tickCount % 2 === 0;
       const now = this.ctx.currentTime;
@@ -187,6 +196,149 @@ class ManorAudioEngine {
       osc.start(now);
       osc.stop(now + 0.075);
     }, 1050);
+  }
+
+  private playSubfloorHeartbeat(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const baseNow = this.ctx.currentTime;
+    const pulses = [
+      { offset: 0.02, startHz: 62, endHz: 34, amp: 0.24 },
+      { offset: 0.29, startHz: 54, endHz: 30, amp: 0.16 },
+    ];
+    for (const p of pulses) {
+      const t0 = baseNow + p.offset;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const env = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(p.startHz, t0);
+      osc.frequency.exponentialRampToValueAtTime(p.endHz, t0 + 0.22);
+
+      filter.type = 'lowpass';
+      filter.frequency.value = 110;
+
+      env.gain.setValueAtTime(0.0001, t0);
+      env.gain.linearRampToValueAtTime(p.amp, t0 + 0.025);
+      env.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.26);
+
+      osc.connect(filter);
+      filter.connect(env);
+      env.connect(this.masterGain);
+
+      osc.start(t0);
+      osc.stop(t0 + 0.28);
+    }
+  }
+
+  private startPhantomFootsteps(): void {
+    if (this.footstepsTimer !== null) {
+      window.clearInterval(this.footstepsTimer);
+    }
+    this.footstepsTimer = window.setInterval(() => {
+      if (!this.enabled || !this.ctx || !this.masterGain) return;
+      // Three slow steps pacing across the upper mansard floor, stopping without descending
+      const pans = [-0.6, -0.1, 0.45];
+      pans.forEach((panValue, idx) => {
+        if (!this.ctx || !this.masterGain) return;
+        const t0 = this.ctx.currentTime + idx * 0.92;
+
+        const osc = this.ctx.createOscillator();
+        const filter = this.ctx.createBiquadFilter();
+        const env = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(98 - idx * 6, t0);
+        osc.frequency.exponentialRampToValueAtTime(42, t0 + 0.14);
+
+        filter.type = 'lowpass';
+        filter.frequency.value = 210;
+
+        env.gain.setValueAtTime(0.0001, t0);
+        env.gain.linearRampToValueAtTime(0.095, t0 + 0.015);
+        env.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+
+        osc.connect(filter);
+        filter.connect(env);
+
+        if (typeof this.ctx.createStereoPanner === 'function') {
+          const panner = this.ctx.createStereoPanner();
+          panner.pan.setValueAtTime(panValue, t0);
+          env.connect(panner);
+          panner.connect(this.masterGain);
+        } else {
+          env.connect(this.masterGain);
+        }
+
+        osc.start(t0);
+        osc.stop(t0 + 0.24);
+      });
+    }, 15500);
+  }
+
+  public playCandleSputter(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const nowMs = performance.now();
+    if (nowMs - this.lastSputterAt < 850) return;
+    this.lastSputterAt = nowMs;
+
+    const now = this.ctx.currentTime;
+    const len = Math.floor(this.ctx.sampleRate * 0.045);
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      ch[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.22));
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const hp = this.ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 1950;
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0.09;
+
+    src.connect(hp);
+    hp.connect(gain);
+    gain.connect(this.masterGain);
+    src.start(now);
+  }
+
+  public playGhostBreath(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+    const len = Math.floor(this.ctx.sampleRate * 1.35);
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      const env = Math.sin((i / len) * Math.PI);
+      ch[i] = (Math.random() * 2 - 1) * env * env;
+    }
+
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+
+    const f1 = this.ctx.createBiquadFilter();
+    f1.type = 'bandpass';
+    f1.frequency.setValueAtTime(520, now);
+    f1.frequency.exponentialRampToValueAtTime(290, now + 1.3);
+    f1.Q.value = 5.5;
+
+    const f2 = this.ctx.createBiquadFilter();
+    f2.type = 'bandpass';
+    f2.frequency.setValueAtTime(1480, now);
+    f2.frequency.exponentialRampToValueAtTime(980, now + 1.3);
+    f2.Q.value = 7.0;
+
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0.11;
+
+    src.connect(f1);
+    f1.connect(gain);
+    src.connect(f2);
+    f2.connect(gain);
+    gain.connect(this.masterGain);
+
+    src.start(now);
   }
 
   public playFloorboardCreak(): void {
@@ -235,7 +387,6 @@ class ManorAudioEngine {
     if (!this.enabled || !this.ctx || !this.masterGain) return;
     const now = this.ctx.currentTime;
 
-    // 1. Brittle wax crack
     const crackLen = Math.floor(this.ctx.sampleRate * 0.09);
     const crackBuf = this.ctx.createBuffer(1, crackLen, this.ctx.sampleRate);
     const data = crackBuf.getChannelData(0);
@@ -255,7 +406,6 @@ class ManorAudioEngine {
     crackGain.connect(this.masterGain);
     crackSrc.start(now);
 
-    // 2. Sepulchral bronze bell partials (D minor)
     const partials = [146.83, 174.61, 220.0, 293.66, 440.0];
     partials.forEach((freq, idx) => {
       if (!this.ctx || !this.masterGain) return;
@@ -348,7 +498,7 @@ class ManorAudioEngine {
     formant.Q.value = 6.0;
 
     const gain = this.ctx.createGain();
-    gain.gain.value = 0.075;
+    gain.gain.value = 0.085;
 
     src.connect(formant);
     formant.connect(gain);

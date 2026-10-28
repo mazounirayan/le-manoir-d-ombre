@@ -32,6 +32,9 @@ export function GrimoireBook() {
       const next = [...prev];
       next[idx] = !next[idx];
       manorAudio.playCandleChime(idx, next[idx]);
+      if (next.every(Boolean)) {
+        manorAudio.playGhostBreath();
+      }
       return next;
     });
   };
@@ -50,7 +53,7 @@ export function GrimoireBook() {
           <p className="mt-4 max-w-[58ch] text-base text-muted">
             Retrouvé ouvert sur le lutrin de chêne, ce registre testamentaire rassemble les planches
             anatomiques, les calculs d’éclipse et la liturgie domestique de la lignée Valmorin. Rompez la
-            cire notariale pour feuilleter ses vélinages.
+            cire notariale pour feuilleter ses vélinages tachés de rouille et de suif.
           </p>
         </header>
 
@@ -72,24 +75,24 @@ export function GrimoireBook() {
                   <p className="mt-3 max-w-[52ch] text-sm text-muted">
                     Reliure en veau noirci, fermoirs de fer forgé, scellé à la cire carmin par l’étude de
                     maître Anselme Vasseur. Toute ouverture engage le lecteur au silence sur les clauses
-                    relatives à la mansarde nord.
+                    relatives à la mansarde nord et aux bruits entendus sous les dalles.
                   </p>
                 </div>
 
-                {/* Engraved Heraldic Wax Seal SVG */}
+                {/* Engraved Heraldic Wax Seal SVG with Dripping Carmine Wax */}
                 <div className="flex shrink-0 flex-col items-center gap-4 self-center">
                   <svg
-                    viewBox="0 0 120 120"
-                    className="h-28 w-28 text-accent"
+                    viewBox="0 0 120 132"
+                    className="h-32 w-28 text-accent"
                     aria-hidden="true"
                   >
                     <path
-                      d="M60 6 C88 4, 114 26, 113 58 C115 89, 91 114, 59 113 C28 115, 6 91, 7 61 C5 29, 31 8, 60 6 Z"
+                      d="M60 6 C88 4, 114 26, 113 58 C115 86, 95 108, 70 112 C69 121, 67 128, 64 128 C61 128, 60 119, 58 113 C49 114, 46 122, 43 122 C40 122, 40 113, 35 110 C15 101, 5 82, 7 61 C5 29, 31 8, 60 6 Z"
                       fill="currentColor"
                     />
                     <circle
                       cx="60"
-                      cy="60"
+                      cy="58"
                       r="40"
                       fill="none"
                       stroke="var(--color-accent-ink)"
@@ -97,7 +100,7 @@ export function GrimoireBook() {
                     />
                     <circle
                       cx="60"
-                      cy="60"
+                      cy="58"
                       r="34"
                       fill="none"
                       stroke="var(--color-accent-ink)"
@@ -105,7 +108,7 @@ export function GrimoireBook() {
                       strokeDasharray="3 3"
                     />
                     <path
-                      d="M46 42 L60 78 L74 42 M52 56 L68 56"
+                      d="M46 40 L60 76 L74 40 M52 54 L68 54"
                       fill="none"
                       stroke="var(--color-accent-ink)"
                       strokeWidth="1.8"
@@ -168,29 +171,54 @@ export function GrimoireBook() {
                   transition={{ duration: 0.2 }}
                   className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-0"
                 >
-                  {/* Left Vellum Leaf (Verso) */}
-                  <div className="vellum-page flex flex-col justify-between rounded-xs p-6 sm:p-10 lg:border-r-2">
-                    <div>
+                  {/* Left Vellum Leaf (Verso) with Dried Carmine & Iron-Gall Stain Filigree */}
+                  <div className="vellum-page relative flex flex-col justify-between overflow-hidden rounded-xs p-6 sm:p-10 lg:border-r-2">
+                    <svg
+                      viewBox="0 0 90 90"
+                      aria-hidden="true"
+                      className="pointer-events-none absolute top-0 left-0 h-20 w-20 text-accent opacity-20"
+                    >
+                      <path
+                        d="M0 0 L68 0 C54 14, 48 24, 34 26 C26 27, 24 44, 15 47 C8 49, 6 65, 0 74 Z"
+                        fill="currentColor"
+                      />
+                      <circle cx="42" cy="36" r="2.6" fill="currentColor" />
+                      <circle cx="24" cy="54" r="1.8" fill="currentColor" />
+                    </svg>
+
+                    <div className="relative">
                       <h3 className="type-title text-vellum-ink">{currentFolio.leftTitle}</h3>
                       <p className="mt-1 text-sm italic text-vellum-muted">{currentFolio.latinRubric}</p>
 
-                      <div className="mt-6 space-y-4 text-base leading-relaxed text-vellum-ink">
+                      <div className="mt-6 max-w-[56ch] space-y-4 text-base leading-relaxed text-vellum-ink">
                         {currentFolio.leftParagraphs.map((para) => (
                           <p key={para.slice(0, 24)}>{para}</p>
                         ))}
                       </div>
                     </div>
 
-                    <blockquote className="mt-8 border-t border-vellum-deep pt-4 text-sm italic text-vellum-muted">
+                    <blockquote className="relative mt-8 max-w-[56ch] border-t border-vellum-deep pt-4 text-sm italic text-vellum-muted">
                       {currentFolio.leftMarginalia}
                     </blockquote>
                   </div>
 
                   {/* Right Vellum Leaf (Recto) */}
-                  <div className="vellum-page flex flex-col justify-between rounded-xs p-6 sm:p-10">
+                  <div className="vellum-page relative flex flex-col justify-between overflow-hidden rounded-xs p-6 sm:p-10">
+                    <svg
+                      viewBox="0 0 90 90"
+                      aria-hidden="true"
+                      className="pointer-events-none absolute right-0 bottom-0 h-24 w-24 text-accent opacity-20"
+                    >
+                      <path
+                        d="M90 90 L24 90 C38 78, 46 69, 58 65 C68 62, 72 44, 80 38 C85 34, 87 18, 90 8 Z"
+                        fill="currentColor"
+                      />
+                      <circle cx="52" cy="56" r="3.1" fill="currentColor" />
+                    </svg>
+
                     {currentFolio.rightType === 'engraving' && currentFolio.engravingSrc ? (
                       <>
-                        <figure className="flex flex-col items-center">
+                        <figure className="relative flex flex-col items-center">
                           <div className="max-h-96 overflow-hidden border border-vellum-deep bg-vellum-deep/40 p-2">
                             <img
                               src={currentFolio.engravingSrc}
@@ -200,20 +228,22 @@ export function GrimoireBook() {
                               className="h-80 w-auto object-contain mix-blend-multiply"
                             />
                           </div>
-                          <figcaption className="mt-4 text-center text-sm font-medium text-vellum-ink">
+                          <figcaption className="mt-4 max-w-[52ch] text-center text-sm font-medium text-vellum-ink">
                             {currentFolio.rightCaption}
                           </figcaption>
                         </figure>
 
-                        <p className="mt-6 border-t border-vellum-deep pt-4 text-sm text-vellum-muted">
+                        <p className="relative mt-6 max-w-[56ch] border-t border-vellum-deep pt-4 text-sm text-vellum-muted">
                           {currentFolio.rightText}
                         </p>
                       </>
                     ) : (
-                      <div className="flex h-full flex-col justify-between">
+                      <div className="relative flex h-full flex-col justify-between">
                         <div>
                           <h4 className="type-title text-vellum-ink">{currentFolio.rightCaption}</h4>
-                          <p className="mt-2 text-sm text-vellum-muted">{currentFolio.rightText}</p>
+                          <p className="mt-2 max-w-[54ch] text-sm text-vellum-muted">
+                            {currentFolio.rightText}
+                          </p>
 
                           {/* Interactive 5 Vigil Candles Ritual */}
                           <div className="mt-8 grid grid-cols-5 gap-2 sm:gap-3">
@@ -250,13 +280,20 @@ export function GrimoireBook() {
 
                         <div className="mt-8 rounded-xs border border-vellum-deep bg-vellum-deep/40 p-4">
                           {ritualComplete ? (
-                            <p className="text-sm font-medium text-accent">
-                              Codicille dévoilé : « Les cinq flammes brûlent d’un même souffle. Le domaine ne
-                              cherche point d’héritier ; il retient seulement le lecteur qui a rallumé la
-                              veille. »
-                            </p>
+                            <div className="space-y-2">
+                              <p className="max-w-[54ch] text-sm font-medium text-accent">
+                                Codicille dévoilé : « Les cinq flammes brûlent d’un même souffle. Le domaine ne
+                                cherche point d’héritier ; il retient seulement le lecteur qui a rallumé la
+                                veille. »
+                              </p>
+                              <p className="max-w-[54ch] border-t border-vellum-deep pt-2 text-xs italic text-vellum-ink">
+                                Trace fraîche apparue dans la marge : cinq mèches brûlent pour les défunts de
+                                Valmorin. Ne soufflez point la vôtre ; un sixième témoin s’est arrêté derrière
+                                votre épaule pour lire avec vous.
+                              </p>
+                            </div>
                           ) : (
-                            <p className="text-sm text-vellum-muted">
+                            <p className="max-w-[54ch] text-sm text-vellum-muted">
                               Veilleuses ardentes :{' '}
                               <code className="tabular-nums text-vellum-ink">
                                 {litCount}/{VIGIL_SOULS.length}
