@@ -1,5 +1,10 @@
 # Le Manoir d’Ombre : Inventaire de Valmorin (1889)
 
+[![Déploiement GitHub Pages](https://github.com/mazounirayan/le-manoir-d-ombre/actions/workflows/deploy.yml/badge.svg)](https://github.com/mazounirayan/le-manoir-d-ombre/actions/workflows/deploy.yml)
+[![Démo en ligne](https://img.shields.io/badge/D%C3%A9mo%20en%20ligne-mazounirayan.github.io-9e2a25)](https://mazounirayan.github.io/le-manoir-d-ombre/)
+
+> 🕯️ **Visiter l’expérience en ligne** : [https://mazounirayan.github.io/le-manoir-d-ombre/](https://mazounirayan.github.io/le-manoir-d-ombre/)
+
 Expérience web gothique éditoriale et interactive conçue pour démontrer une direction artistique exigeante en **Creative Development**, construite selon une méthodologie stricte **Anti-AI-Slop**.
 
 ![Gravure frontispice du Domaine de Valmorin](./public/assets/manoir-gravure.webp)

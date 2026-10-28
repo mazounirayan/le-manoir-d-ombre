@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { candleCoords } from '../utils/candleState';
-import { WALL_PHANTOM_MARKS } from '../data/valmorinData';
+import { WALL_PHANTOM_MARKS, assetUrl } from '../data/valmorinData';
 import { manorAudio } from '../audio/manorAudio';
 
 export type LightingMode = 'candle' | 'lantern';
@@ -70,7 +70,7 @@ export function CandlelightCanvas({ mode }: CandlelightCanvasProps) {
     resize();
 
     const eyesImg = new Image();
-    eyesImg.src = '/assets/portrait-heloise.webp';
+    eyesImg.src = assetUrl('assets/portrait-heloise.webp');
 
     const moteCount = prefersReduced ? 14 : 40;
     const motes: DustMote[] = Array.from({ length: moteCount }, (_, i) => ({

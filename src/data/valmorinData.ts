@@ -65,6 +65,9 @@ export interface WallPhantomMark {
   angleDeg?: number;
 }
 
+const base = import.meta.env.BASE_URL;
+export const assetUrl = (p: string) => `${base.endsWith('/') ? base : `${base}/`}${p.replace(/^\//, '')}`;
+
 export const MANOR_ROOMS = [
   { id: 'vestibule', numeral: 'I', label: 'Le vestibule' },
   { id: 'galerie', numeral: 'II', label: 'La galerie' },
@@ -93,7 +96,7 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     title: 'Dernier propriétaire',
     years: '1818 à 1889',
     medium: 'Huile sur toile',
-    imageSrc: '/assets/portrait-severin.webp',
+    imageSrc: assetUrl('assets/portrait-severin.webp'),
     width: 896,
     height: 1200,
     alt: 'Portrait en clair-obscur de Séverin de Valmorin en redingote noire',
@@ -117,7 +120,7 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     title: 'Fille du précédent',
     years: '1854 à 1879',
     medium: 'Huile sur panneau de noyer',
-    imageSrc: '/assets/portrait-heloise.webp',
+    imageSrc: assetUrl('assets/portrait-heloise.webp'),
     width: 896,
     height: 1200,
     alt: 'Portrait sombre d’Héloïse de Valmorin en voile de dentelle noire, une rose séchée entre les mains',
@@ -141,7 +144,7 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     title: 'Confesseur du domaine',
     years: '1822 à 1889',
     medium: 'Huile sur toile marouflée',
-    imageSrc: '/assets/portrait-malachie.webp',
+    imageSrc: assetUrl('assets/portrait-malachie.webp'),
     width: 896,
     height: 1200,
     alt: 'Portrait à la bougie de l’abbé Malachie tenant une montre à gousset',
@@ -166,7 +169,7 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     title: 'Enfants du domaine',
     years: '1871 à 1881',
     medium: 'Ferrotype au collodion',
-    imageSrc: '/assets/portrait-jumeaux.webp',
+    imageSrc: assetUrl('assets/portrait-jumeaux.webp'),
     width: 1200,
     height: 896,
     alt: 'Ferrotype ancien de deux enfants immobiles dans un couloir boisé',
@@ -203,7 +206,7 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     ],
     leftMarginalia: 'Ne pas souffler la cinquième.',
     rightType: 'engraving',
-    engravingSrc: '/assets/grimoire-botanique.webp',
+    engravingSrc: assetUrl('assets/grimoire-botanique.webp'),
     engravingAlt: 'Gravure sur cuivre d’un crâne, d’un sphinx tête-de-mort et de rameaux de belladone',
     engravingWidth: 896,
     engravingHeight: 1200,
@@ -224,7 +227,7 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     ],
     leftMarginalia: 'Compter les battements. Il en manque un.',
     rightType: 'engraving',
-    engravingSrc: '/assets/grimoire-eclipse.webp',
+    engravingSrc: assetUrl('assets/grimoire-eclipse.webp'),
     engravingAlt: 'Gravure d’une sphère armillaire figée tenue par une main squelettique',
     engravingWidth: 896,
     engravingHeight: 1200,
@@ -258,7 +261,7 @@ export const GRIMOIRE_FOLIOS: GrimoireFolio[] = [
     ],
     leftMarginalia: 'Ne cherchez pas la sortie.',
     rightType: 'engraving',
-    engravingSrc: '/assets/manoir-gravure.webp',
+    engravingSrc: assetUrl('assets/manoir-gravure.webp'),
     engravingAlt: 'Gravure de la grille fermée du manoir sous la lune',
     engravingWidth: 1025,
     engravingHeight: 735,

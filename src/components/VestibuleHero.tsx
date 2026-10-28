@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { FlameIcon, CompassRoseIcon } from './GothicIcons';
 import { candleCoords } from '../utils/candleState';
+import { assetUrl } from '../data/valmorinData';
 
 interface VestibuleHeroProps {
   soundOn: boolean;
@@ -180,7 +181,7 @@ export function VestibuleHero({ soundOn, onEnterWithSound, returnedFromCrypt }: 
               <motion.div style={{ y: etchingY }} className="relative">
                 <img
                   ref={plateImgRef}
-                  src="/assets/manoir-gravure.webp"
+                  src={assetUrl('assets/manoir-gravure.webp')}
                   alt="Gravure du manoir de Valmorin sur sa falaise, derrière une grille entrouverte"
                   width={1025}
                   height={735}
