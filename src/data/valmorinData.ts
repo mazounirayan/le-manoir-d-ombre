@@ -175,7 +175,7 @@ export const ANCESTOR_PORTRAITS: AncestorPortrait[] = [
     epitaph: 'Le photographe n’a fait poser qu’un seul enfant.',
     versoConfession: 'Au dos de la plaque : « Il en manque un dans l’escalier. »',
     notaryNote: 'Une seule naissance est inscrite au registre de la paroisse.',
-    horrorPhenomenon: 'L’un des deux s’efface de la plaque.',
+    horrorPhenomenon: 'Leurs pupilles se sont dilatées.',
     alteration: 'mirrored',
     dilation: 0.6,
     eyes: [

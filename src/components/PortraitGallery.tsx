@@ -262,29 +262,6 @@ export function PortraitFrame({ portrait, index }: PortraitFrameProps) {
 
               ctx.restore();
             });
-
-            // Ferrotype: one child fades from the silver plate under heat.
-            if (portrait.id === 'jumeaux' && heatRef.current > 0.35 && !prefersReduced) {
-              const anomaly = (heatRef.current - 0.35) / 0.65;
-              const flicker = 0.55 + 0.45 * Math.sin(now * 0.017);
-              const cx = dispW * 0.41;
-              ctx.save();
-              const ghost = ctx.createRadialGradient(cx, dispH * 0.52, dispW * 0.02, cx, dispH * 0.52, dispW * 0.17);
-              ghost.addColorStop(0, `rgba(16, 13, 11, ${(anomaly * flicker * 0.68).toFixed(3)})`);
-              ghost.addColorStop(1, 'rgba(16, 13, 11, 0)');
-              ctx.fillStyle = ghost;
-              ctx.fillRect(dispW * 0.23, dispH * 0.18, dispW * 0.36, dispH * 0.74);
-              ctx.strokeStyle = `rgba(218, 198, 168, ${(anomaly * 0.32).toFixed(3)})`;
-              ctx.lineWidth = 0.75;
-              for (let s = 0; s < 5; s++) {
-                const sx = dispW * (0.31 + s * 0.085) + Math.sin(now * 0.004 + s) * 1.5;
-                ctx.beginPath();
-                ctx.moveTo(sx, dispH * 0.14);
-                ctx.lineTo(sx, dispH * 0.86);
-                ctx.stroke();
-              }
-              ctx.restore();
-            }
           }
         }
       }
