@@ -1,0 +1,182 @@
+/* Hallmark · theme: valmorin-noir · genre: editorial-exhibition · posture: dramatic */
+/* ux-lint-disable-next-line css-import-render-blocking */
+@import "tailwindcss";
+
+:root {
+  --color-paper: oklch(14% 0.010 48);
+  --color-paper-deep: oklch(11% 0.010 48);
+  --color-surface: oklch(18% 0.012 48);
+  --color-surface-raised: oklch(22% 0.015 48);
+  --color-vellum: oklch(86% 0.028 78);
+  --color-vellum-deep: oklch(79% 0.035 76);
+  --color-vellum-ink: oklch(25% 0.026 38);
+  --color-vellum-muted: oklch(38% 0.024 45);
+  --color-line: oklch(31% 0.018 52);
+  --color-line-strong: oklch(44% 0.036 62);
+  --color-ink: oklch(92% 0.008 65);
+  --color-muted: oklch(73% 0.012 65);
+  --color-faint: oklch(62% 0.012 65);
+  --color-accent: oklch(55% 0.145 24);
+  --color-accent-hover: oklch(62% 0.150 24);
+  --color-accent-ink: oklch(96% 0.006 65);
+  --color-candle: oklch(79% 0.125 74);
+  --color-candle-deep: oklch(58% 0.110 68);
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Spectral", Georgia, serif;
+  --font-code: "IBM Plex Mono", Consolas, monospace;
+
+  --text-display: clamp(2.5rem, 5.2vw, 4.25rem);
+  --text-headline: clamp(1.85rem, 3.4vw, 2.75rem);
+  --text-title: 1.5rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-micro: 0.75rem;
+
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme {
+  --color-paper: var(--color-paper);
+  --color-paper-deep: var(--color-paper-deep);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-vellum: var(--color-vellum);
+  --color-vellum-deep: var(--color-vellum-deep);
+  --color-vellum-ink: var(--color-vellum-ink);
+  --color-vellum-muted: var(--color-vellum-muted);
+  --color-line: var(--color-line);
+  --color-line-strong: var(--color-line-strong);
+  --color-ink: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-faint: var(--color-faint);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-ink: var(--color-accent-ink);
+  --color-candle: var(--color-candle);
+  --color-candle-deep: var(--color-candle-deep);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --radius-none: var(--radius-none);
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+}
+
+html,
+body {
+  overflow-x: clip;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+html {
+  scrollbar-color: var(--color-line-strong) var(--color-paper);
+  caret-color: var(--color-accent);
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+h3,
+h4 {
+  font-family: var(--font-display);
+}
+
+p,
+li,
+blockquote {
+  text-wrap: pretty;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-code);
+}
+
+.type-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+.type-headline {
+  font-family: var(--font-display);
+  font-size: var(--text-headline);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+}
+
+.type-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.frame-double {
+  border: 1px solid var(--color-line-strong);
+  outline: 1px solid var(--color-line);
+  outline-offset: -4px;
+}
+
+.vellum-page {
+  background-color: var(--color-vellum);
+  color: var(--color-vellum-ink);
+  border: 1px solid var(--color-line-strong);
+}
+
+.eye-glint {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--color-ink);
+  opacity: 0.42;
+  mix-blend-mode: screen;
+}
+
+.eye-glint-warm {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background-color: var(--color-candle);
+  opacity: 0.82;
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}

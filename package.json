@@ -1,0 +1,28 @@
+{
+  "name": "le-manoir-d-ombre",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Domaine de Valmorin (1889) — Expérience gothique éditoriale & interactive conçue selon une méthodologie stricte Anti-AI-Slop.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.6.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.17",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.17",
+    "typescript": "~5.7.3",
+    "vite": "^6.2.3"
+  }
+}
