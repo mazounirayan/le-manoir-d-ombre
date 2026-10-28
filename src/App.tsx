@@ -12,8 +12,8 @@ export function App() {
   const [soundOn, setSoundOn] = useState(false);
   const [lightingMode, setLightingMode] = useState<LightingMode>('lantern');
   const [activeRoom, setActiveRoom] = useState<string>('vestibule');
+  const [visitedCrypt, setVisitedCrypt] = useState(false);
 
-  // Observe active room during scrollytelling and trigger subtle wooden floorboard creaks
   useEffect(() => {
     const sections = MANOR_ROOMS.map((r) => document.getElementById(r.id)).filter(
       (el): el is HTMLElement => el !== null
@@ -24,10 +24,9 @@ export function App() {
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
+            if (entry.target.id === 'crypte') setVisitedCrypt(true);
             setActiveRoom((prev) => {
-              if (prev !== entry.target.id) {
-                manorAudio.playFloorboardCreak();
-              }
+              if (prev !== entry.target.id) manorAudio.playFloorboardCreak();
               return entry.target.id;
             });
           }
@@ -40,9 +39,31 @@ export function App() {
     return () => observer.disconnect();
   }, []);
 
+  // The tab calls the visitor back when they leave.
+  useEffect(() => {
+    const originalTitle = document.title;
+    let restoreTimer = 0;
+    const onVisibility = () => {
+      window.clearTimeout(restoreTimer);
+      if (document.hidden) {
+        document.title = 'Reviens.';
+      } else {
+        document.title = 'Merci.';
+        restoreTimer = window.setTimeout(() => {
+          document.title = originalTitle;
+        }, 2200);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.clearTimeout(restoreTimer);
+      document.removeEventListener('visibilitychange', onVisibility);
+      document.title = originalTitle;
+    };
+  }, []);
+
   const handleToggleSound = () => {
-    const next = manorAudio.toggle();
-    setSoundOn(next);
+    setSoundOn(manorAudio.toggle());
   };
 
   const handleEnterWithSound = () => {
@@ -51,10 +72,7 @@ export function App() {
       setSoundOn(true);
     }
     setLightingMode('candle');
-    const gallery = document.getElementById('galerie');
-    if (gallery) {
-      gallery.scrollIntoView({ behavior: 'smooth' });
-    }
+    document.getElementById('galerie')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleToggleLighting = () => {
@@ -73,8 +91,12 @@ export function App() {
         onToggleLighting={handleToggleLighting}
       />
 
-      <main className="relative z-10">
-        <VestibuleHero soundOn={soundOn} onEnterWithSound={handleEnterWithSound} />
+      <main className="relative">
+        <VestibuleHero
+          soundOn={soundOn}
+          onEnterWithSound={handleEnterWithSound}
+          returnedFromCrypt={visitedCrypt && activeRoom === 'vestibule'}
+        />
         <PortraitGallery />
         <GrimoireBook />
         <CryptLedger />

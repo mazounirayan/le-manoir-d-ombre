@@ -6,6 +6,7 @@ export interface CandleCoordinates {
   vx: number;
   vy: number;
   hasMoved: boolean;
+  blackoutRequested: boolean;
 }
 
 export const candleCoords: CandleCoordinates = {
@@ -16,4 +17,9 @@ export const candleCoords: CandleCoordinates = {
   vx: 0,
   vy: 0,
   hasMoved: false,
+  blackoutRequested: false,
 };
+
+export function requestBlackout(): void {
+  candleCoords.blackoutRequested = true;
+}

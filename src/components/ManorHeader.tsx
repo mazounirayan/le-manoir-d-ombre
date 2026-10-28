@@ -27,7 +27,7 @@ export function ManorHeader({
           href="#vestibule"
           className="brand-wordmark font-display text-lg font-semibold text-ink transition-colors duration-150 hover:text-candle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-candle"
         >
-          Valmorin <code className="ml-1 text-xs text-candle">1889</code>
+          Valmorin <code className="candle-gleam ml-1 inline-block text-xs text-candle">1889</code>
         </a>
 
         <nav aria-label="Pièces du manoir" className="hidden items-center gap-6 md:flex">

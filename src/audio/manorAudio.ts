@@ -505,6 +505,124 @@ class ManorAudioEngine {
     gain.connect(this.masterGain);
     src.start(now);
   }
+
+  public playSuddenKnock(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const baseNow = this.ctx.currentTime;
+    const offsets = [0, 0.14];
+
+    for (let k = 0; k < offsets.length; k++) {
+      const t0 = baseNow + offsets[k];
+      const amp = k === 0 ? 0.32 : 0.24;
+
+      const osc = this.ctx.createOscillator();
+      const bodyFilter = this.ctx.createBiquadFilter();
+      const env = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(175 - k * 14, t0);
+      osc.frequency.exponentialRampToValueAtTime(58, t0 + 0.065);
+
+      bodyFilter.type = 'lowpass';
+      bodyFilter.frequency.value = 420;
+
+      env.gain.setValueAtTime(0.0001, t0);
+      env.gain.linearRampToValueAtTime(amp, t0 + 0.003);
+      env.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.085);
+
+      osc.connect(bodyFilter);
+      bodyFilter.connect(env);
+      env.connect(this.masterGain);
+      osc.start(t0);
+      osc.stop(t0 + 0.095);
+
+      const clickLen = Math.floor(this.ctx.sampleRate * 0.024);
+      const clickBuf = this.ctx.createBuffer(1, clickLen, this.ctx.sampleRate);
+      const ch = clickBuf.getChannelData(0);
+      for (let i = 0; i < clickLen; i++) {
+        ch[i] = (Math.random() * 2 - 1) * Math.exp(-i / (clickLen * 0.2));
+      }
+      const clickSrc = this.ctx.createBufferSource();
+      clickSrc.buffer = clickBuf;
+      const bp = this.ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 920;
+      bp.Q.value = 2.8;
+      const clickGain = this.ctx.createGain();
+      clickGain.gain.value = amp * 0.55;
+
+      clickSrc.connect(bp);
+      bp.connect(clickGain);
+      clickGain.connect(this.masterGain);
+      clickSrc.start(t0);
+    }
+  }
+
+  public playJumpStinger(): void {
+    if (!this.enabled || !this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+
+    // Low wooden door slam
+    const sub = this.ctx.createOscillator();
+    const subEnv = this.ctx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(86, now);
+    sub.frequency.exponentialRampToValueAtTime(26, now + 0.42);
+    subEnv.gain.setValueAtTime(0.0001, now);
+    subEnv.gain.linearRampToValueAtTime(0.52, now + 0.005);
+    subEnv.gain.exponentialRampToValueAtTime(0.0001, now + 0.56);
+    sub.connect(subEnv);
+    subEnv.connect(this.masterGain);
+    sub.start(now);
+    sub.stop(now + 0.58);
+
+    // Dissonant minor-second and tritone cluster
+    const cluster = [311.13, 329.63, 466.16, 659.25];
+    const screechFilter = this.ctx.createBiquadFilter();
+    screechFilter.type = 'bandpass';
+    screechFilter.frequency.setValueAtTime(2250, now);
+    screechFilter.frequency.exponentialRampToValueAtTime(540, now + 0.85);
+    screechFilter.Q.value = 3.6;
+
+    const clusterGain = this.ctx.createGain();
+    clusterGain.gain.setValueAtTime(0.0001, now);
+    clusterGain.gain.linearRampToValueAtTime(0.18, now + 0.012);
+    clusterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.92);
+
+    screechFilter.connect(clusterGain);
+    clusterGain.connect(this.masterGain);
+
+    for (const freq of cluster) {
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.linearRampToValueAtTime(freq * 0.96, now + 0.9);
+      osc.connect(screechFilter);
+      osc.start(now);
+      osc.stop(now + 0.94);
+    }
+
+    // Sharp intake of breath right beside the ear
+    const gaspLen = Math.floor(this.ctx.sampleRate * 0.26);
+    const gaspBuf = this.ctx.createBuffer(1, gaspLen, this.ctx.sampleRate);
+    const ch = gaspBuf.getChannelData(0);
+    for (let i = 0; i < gaspLen; i++) {
+      ch[i] = (Math.random() * 2 - 1) * Math.exp(-i / (gaspLen * 0.35));
+    }
+    const gaspSrc = this.ctx.createBufferSource();
+    gaspSrc.buffer = gaspBuf;
+    const gaspFilter = this.ctx.createBiquadFilter();
+    gaspFilter.type = 'bandpass';
+    gaspFilter.frequency.value = 1620;
+    gaspFilter.Q.value = 4.2;
+    const gaspGain = this.ctx.createGain();
+    gaspGain.gain.value = 0.24;
+
+    gaspSrc.connect(gaspFilter);
+    gaspFilter.connect(gaspGain);
+    gaspGain.connect(this.masterGain);
+    gaspSrc.start(now);
+  }
 }
 
 export const manorAudio = new ManorAudioEngine();
